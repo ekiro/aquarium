@@ -6,7 +6,6 @@ authors = ["Piotr Karkut <karkucik@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-websockets = "^8.1"
 dataclasses-json = "^0.4.2"
 asyncpg = "^0.20.1"
 aiohttp = "^3.6.2"

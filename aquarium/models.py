@@ -17,3 +17,15 @@ class Measurement:
     @property
     def time_iso(self):
         return datetime.fromisoformat(self.time)
+
+
+@dataclass_json
+@dataclass
+class Config:
+    device_id: int
+    temp: float
+    temp_tolerance: float
+    light_start: str
+    light_end: str
+    pump_start: str
+    pump_end: str

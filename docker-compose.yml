@@ -8,12 +8,14 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-      - 5432:5432
+      - "127.0.0.1:5432:5432"
   web:
     build: .
     container_name: "web-aquarium"
-    ports: 
+    ports:
       - 8000:8000
     volumes:
       - .:/aquarium
     restart: unless-stopped
+    env_file:
+      - .env
