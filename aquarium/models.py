@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from datetime import datetime
+
 from dataclasses_json import dataclass_json
 
 
@@ -11,3 +13,7 @@ class Measurement:
     light: bool
     pump: bool
     uptime: float
+
+    @property
+    def time_iso(self):
+        return datetime.fromisoformat(self.time)
