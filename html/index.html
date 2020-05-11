@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+
+    <title>Kiro's Aquarium</title>
+    <style>
+        .container {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="row">
+        <div class="card bg-white col-md" style="margin: 8px;">
+            <div class="card-body">
+                <h5 class="card-title">Temp</h5>
+                <p class="card-text">{{ temp }}&deg;C</p>
+            </div>
+        </div>
+        <div class="card col-md" v-bind:class="[heater ? 'bg-white' : 'bg-light']" style="margin: 8px;">
+            <div class="card-body">
+                <h5 class="card-title">Heater</h5>
+                <p class="card-text">{{ heater ? "On" : "Off" }}</p>
+            </div>
+        </div>
+
+        <div class="card col-md" v-bind:class="[light ? 'bg-white' : 'bg-light']" style="margin: 8px;">
+            <div class="card-body">
+                <h5 class="card-title">Light</h5>
+                <p class="card-text">{{ light ? "On" : "Off" }}</p>
+            </div>
+        </div>
+
+
+        <div class="card col-md" v-bind:class="[pump ? 'bg-white' : 'bg-light']"  style="margin: 8px;">
+            <div class="card-body">
+                <h5 class="card-title">Pump</h5>
+                <p class="card-text">{{ pump ? "On" : "Off" }}</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            temp: 0.0,
+            heater: false,
+            light: false,
+            pump: false
+        }
+    })
+    // var update = function () {
+    //     fetch('http://example.com/movies.json')
+    //   .then(response => response.json())
+    //         .then(data => {
+    //             app.data = data
+    //         });
+    // }
+</script>
+</body>
+</html>
