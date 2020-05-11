@@ -28,14 +28,18 @@
                 <p class="card-text">{{ temp }}&deg;C</p>
             </div>
         </div>
-        <div class="card col-md" v-bind:class="[heater ? 'bg-white' : 'bg-light']" style="margin: 8px;">
+        <div class="card col-md"
+             v-bind:class="[heater ? 'bg-white' : 'bg-light']"
+             style="margin: 8px;">
             <div class="card-body">
                 <h5 class="card-title">Heater</h5>
                 <p class="card-text">{{ heater ? "On" : "Off" }}</p>
             </div>
         </div>
 
-        <div class="card col-md" v-bind:class="[light ? 'bg-white' : 'bg-light']" style="margin: 8px;">
+        <div class="card col-md"
+             v-bind:class="[light ? 'bg-white' : 'bg-light']"
+             style="margin: 8px;">
             <div class="card-body">
                 <h5 class="card-title">Light</h5>
                 <p class="card-text">{{ light ? "On" : "Off" }}</p>
@@ -43,7 +47,8 @@
         </div>
 
 
-        <div class="card col-md" v-bind:class="[pump ? 'bg-white' : 'bg-light']"  style="margin: 8px;">
+        <div class="card col-md" v-bind:class="[pump ? 'bg-white' : 'bg-light']"
+             style="margin: 8px;">
             <div class="card-body">
                 <h5 class="card-title">Pump</h5>
                 <p class="card-text">{{ pump ? "On" : "Off" }}</p>
@@ -55,22 +60,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
 <script>
-    var app = new Vue({
+    let data = {
+        temp: 0.0,
+        heater: false,
+        light: false,
+        pump: false
+    };
+    let app = new Vue({
         el: "#app",
-        data: {
-            temp: 0.0,
-            heater: false,
-            light: false,
-            pump: false
-        }
+        data: data
     })
-    // var update = function () {
-    //     fetch('http://example.com/movies.json')
-    //   .then(response => response.json())
-    //         .then(data => {
-    //             app.data = data
-    //         });
-    // }
+    window.addEventListener("load", function (event) {
+        setInterval(function f() {
+            fetch('/history/11314010?n=1')
+                .then(response => response.json())
+                .then(d => {
+                    console.log(d.measurements[0]);
+                    Object.assign(data, d.measurements[0])
+                });
+            return f;
+        }(), 5000)
+
+    });
+
+
 </script>
 </body>
 </html>
