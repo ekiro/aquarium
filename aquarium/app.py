@@ -71,7 +71,7 @@ class DbRepo:
 
     async def get_measurements(
             self, device_id: int, count: int) -> List[Measurement]:
-        count = min(count, 50)
+        count = min(count, 200)
         rows = await self.conn.fetch(
             '''SELECT * FROM measurements WHERE device_id = $1
             ORDER BY time DESC LIMIT $2''', device_id, count
@@ -118,7 +118,7 @@ class Server:
     async def history(self, request):
         res = await self.repo.get_measurements(
             int(request.match_info['device_id']),
-            int(request.query.get('n', 30))
+            int(request.query.get('n', 200))
         )
         return web.json_response({
             'measurements': [m.to_dict() for m in res]

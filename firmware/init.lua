@@ -41,8 +41,9 @@ wifi.sta.connect(function()
 end)
 
 -- Measure temperature, and send it to the server
-cron.schedule("* * * * *", function(e)
-  print("Every minute ")
+
+tmr.create():alarm(10000, tmr.ALARM_AUTO, function(e)
+  print("Every 10sec ")
   send_measurement()
 end)
 

@@ -56,9 +56,19 @@
         </div>
 
     </div>
+    <div class="row">
+        <div class="card bg-white col-md" style="margin: 8px;">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
 </div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"
+        integrity="sha256-nZaxPHA2uAaquixjSDX19TmIlbRNCOrf5HO1oHl5p70="
+        crossorigin="anonymous"></script>
 <script>
     let data = {
         temp: 0.0,
@@ -69,18 +79,83 @@
     let app = new Vue({
         el: "#app",
         data: data
-    })
+    });
+    const timeFormat = 'MM/DD/YYYY HH:mm';
     window.addEventListener("load", function (event) {
+        let ctx = document.getElementById('chart');
+        let myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Temperature',
+
+                    data: [
+                        {x: "2020-05-01T09:53:57+00:00", y: 25.5},
+                        {x: "2020-05-01T09:52:57+00:00", y: 25.5}
+                    ],
+                }]
+            },
+            options: {
+                title: {
+                    text: 'Temperature chart'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            // parser: timeFormat,
+                            // round: 'day'
+                            tooltipFormat: 'll HH:mm'
+                        },
+                        distribution: 'series',
+                        ticks: {
+                            major: {
+                                enabled: true,
+                                fontStyle: 'bold'
+                            },
+                            source: 'data',
+                            autoSkip: true,
+                            autoSkipPadding: 75,
+                            maxRotation: 0,
+                            sampleSize: 100
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Temperature'
+                        }
+                    }]
+                },
+                responsive: true,
+                animation: {
+                    duration: 0,
+                },
+            }
+        });
         setInterval(function f() {
-            fetch('/history/11314010?n=1')
+            fetch('/history/11314010')
                 .then(response => response.json())
                 .then(d => {
-                    console.log(d.measurements[0]);
+
                     Object.assign(data, d.measurements[0])
+                    let ds = []
+                    d.measurements.forEach(function (v) {
+                        ds.push({
+                            x: v.time,
+                            y: v.temp
+                        })
+                        myLineChart.data.datasets[0].data = ds;
+                        myLineChart.update({animation: 0});
+                    });
+
                 });
             return f;
         }(), 5000)
-
     });
 
 
