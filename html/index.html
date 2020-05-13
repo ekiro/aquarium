@@ -142,7 +142,7 @@
                 .then(response => response.json())
                 .then(d => {
 
-                    Object.assign(data, d.measurements[0])
+                    Object.assign(data, d.measurements[0]);
                     let ds = []
                     d.measurements.forEach(function (v) {
                         ds.push({
@@ -153,6 +153,14 @@
                         myLineChart.update({animation: 0});
                     });
 
+                });
+            return f;
+        }(), 5000)
+        setInterval(function f() {
+            fetch('/measurement/11314010')
+                .then(response => response.json())
+                .then(d => {
+                    Object.assign(data, d);
                 });
             return f;
         }(), 5000)

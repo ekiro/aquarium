@@ -6,6 +6,17 @@ from dataclasses_json import dataclass_json
 
 @dataclass_json
 @dataclass
+class TempMeasurement:
+    time: str
+    temp: float
+
+    @property
+    def time_iso(self):
+        return datetime.fromisoformat(self.time)
+
+
+@dataclass_json
+@dataclass
 class Measurement:
     time: str
     temp: float

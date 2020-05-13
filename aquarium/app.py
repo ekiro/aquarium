@@ -6,7 +6,7 @@ import asyncpg
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPForbidden
 
-from aquarium.models import Measurement, Config
+from aquarium.models import Measurement, Config, TempMeasurement
 
 DEVICE_AUTH = os.environ['DEVICE_AUTH']
 DB_HOST = os.getenv('DB_HOST', 'postgres')
@@ -70,11 +70,26 @@ class DbRepo:
         )
 
     async def get_measurements(
-            self, device_id: int, count: int) -> List[Measurement]:
+            self, device_id: int, count: int) -> List[TempMeasurement]:
         count = min(count, 200)
         rows = await self.conn.fetch(
+            '''SELECT DISTINCT
+                   date_trunc('minute', "time") AS time
+                 , avg(temp) OVER (PARTITION BY date_trunc('minute', "time")) AS temp
+            FROM   measurements
+            WHERE device_id = $1 ORDER BY time DESC LIMIT $2''',
+            device_id, count
+        )
+        return [TempMeasurement(
+            time=r['time'].isoformat(),
+            temp=r['temp']
+        ) for r in rows]
+
+    async def get_last_measurement(
+            self, device_id: int) -> List[Measurement]:
+        rows = await self.conn.fetch(
             '''SELECT * FROM measurements WHERE device_id = $1
-            ORDER BY time DESC LIMIT $2''', device_id, count
+            ORDER BY time DESC LIMIT 1''', device_id
         )
         return [Measurement(
             time=r['time'].isoformat(),
@@ -110,7 +125,6 @@ class Server:
 
         device_id = int(request.match_info['device_id'])
         measurement = Measurement.from_dict(await request.json())
-        print(f"< {measurement} {device_id}")
         await self.repo.add_measurement(device_id, measurement)
         return web.json_response(
             (await self.repo.get_config(device_id)).to_dict())
@@ -124,6 +138,12 @@ class Server:
             'measurements': [m.to_dict() for m in res]
         })
 
+    async def last_measurement(self, request):
+        res = await self.repo.get_last_measurement(
+            int(request.match_info['device_id'])
+        )
+        return web.json_response(res.to_dict())
+
     async def index(self, request):
         return web.FileResponse('html/index.html')
 
@@ -134,6 +154,7 @@ app = web.Application()
 asyncio.get_event_loop().run_until_complete(srv.connect())
 app.router.add_get(r'/config/{device_id:\d+}', srv.config)
 app.router.add_post(r'/measurement/{device_id:\d+}', srv.measurement)
+app.router.add_get(r'/measurement/{device_id:\d+}', srv.last_measurement)
 app.router.add_get(r'/history/{device_id:\d+}', srv.history)
 app.router.add_get(r'/', srv.index)
 web.run_app(app, port=8000)
