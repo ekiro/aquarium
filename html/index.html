@@ -141,8 +141,6 @@
             fetch('/history/11314010')
                 .then(response => response.json())
                 .then(d => {
-
-                    Object.assign(data, d.measurements[0]);
                     let ds = []
                     d.measurements.forEach(function (v) {
                         ds.push({

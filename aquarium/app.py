@@ -86,19 +86,22 @@ class DbRepo:
         ) for r in rows]
 
     async def get_last_measurement(
-            self, device_id: int) -> List[Measurement]:
+            self, device_id: int) -> Optional[Measurement]:
         rows = await self.conn.fetch(
             '''SELECT * FROM measurements WHERE device_id = $1
             ORDER BY time DESC LIMIT 1''', device_id
         )
-        return [Measurement(
+        if not rows:
+            return None
+        r = rows[0]
+        return Measurement(
             time=r['time'].isoformat(),
             temp=r['temp'],
             heater=r['heater'],
             pump=r['pump'],
             light=r['light'],
             uptime=r['uptime']
-        ) for r in rows]
+        )
 
 
 class Server:
