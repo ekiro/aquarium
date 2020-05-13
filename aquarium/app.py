@@ -151,10 +151,11 @@ class Server:
         return web.FileResponse('html/index.html')
 
 
+loop = asyncio.get_event_loop()
 srv = Server()
 app = web.Application()
-
-asyncio.get_event_loop().run_until_complete(srv.connect())
+app._set_loop(loop)
+loop.run_until_complete(srv.connect())
 app.router.add_get(r'/config/{device_id:\d+}', srv.config)
 app.router.add_post(r'/measurement/{device_id:\d+}', srv.measurement)
 app.router.add_get(r'/measurement/{device_id:\d+}', srv.last_measurement)
